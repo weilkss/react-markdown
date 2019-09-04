@@ -5,7 +5,8 @@
 	"main": "src/Markdown/index.jsx",
 	"scripts": {
 		"dev": "webpack-dev-server  --host 0.0.0.0 --open http://localhost:8000",
-		"build": "babel src/Markdown/index.jsx --out-file ./lib/markdown.js"
+		"build": "babel src/Markdown/index.jsx --out-file ./lib/markdown.js",
+		"build:dev": "webpack --config webpack.config.js"
 	},
 	"author": "xwb007",
 	"license": "ISC",

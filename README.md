@@ -8,7 +8,7 @@ npm install xwb-react-markdown -save
 
 ### example
 
--   网页演示 [xwb-react-markdown](http://htmlpreview.github.io/?https://github.com/modood/Administrative-divisions-of-China)
+-   网页演示 [xwb-react-markdown](https://htmlpreview.github.io/?https://github.com/xwb007/xwb-react-markdown/example/index.html)
 
 ### git clone
 

@@ -8,12 +8,12 @@ const config = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'example')
     },
     mode: 'development',
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: path.join(__dirname, './dist'),
+        contentBase: path.join(__dirname, './example'),
         port: '8000',
         host: '0.0.0.0',
         historyApiFallback: true,
