@@ -1,11 +1,10 @@
 {
 	"name": "xwb-react-markdown",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "xwb-react-markdown",
 	"main": "src/Markdown/index.jsx",
 	"scripts": {
 		"dev": "webpack-dev-server  --host 0.0.0.0 --open http://localhost:8000",
-		"build": "babel src/Markdown/index.jsx --out-file ./lib/markdown.js",
 		"build:dev": "webpack --config webpack.config.js"
 	},
 	"author": "xwb007",
@@ -27,6 +26,7 @@
 		"react-dom": "^16.9.0"
 	},
 	"devDependencies": {
+		"@babel/cli": "^7.5.5",
 		"@babel/core": "^7.5.5",
 		"@babel/plugin-proposal-class-properties": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",

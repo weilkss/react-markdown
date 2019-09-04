@@ -1,5 +1,4 @@
 import React from 'react'
-import './index.less'
 
 class InputFile extends React.Component {
 	constructor(props) {

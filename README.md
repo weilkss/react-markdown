@@ -25,6 +25,8 @@ npm install xwb-react-markdown -save
 | height    | height default 500 | number |
 | uploadUrl | uploadUrl          | string |
 
+### example
+
 ```js
 // example
 class Example extends React.Component {
@@ -35,7 +37,6 @@ class Example extends React.Component {
         return <Index handleEditorChange={this.handleEditorChange} />;
     }
 }
-
 
 // attr example
 render() {
