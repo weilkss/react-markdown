@@ -35,8 +35,10 @@ class Example extends React.Component {
         return <Index handleEditorChange={this.handleEditorChange} />;
     }
 }
+
+
 // attr example
-    render() {
-        return <Index config={config} handleEditorChange={this.handleEditorChange} />;
-    }
+render() {
+    return <Index config={config} handleEditorChange={this.handleEditorChange} />;
+}
 ```
