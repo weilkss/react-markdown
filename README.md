@@ -6,9 +6,9 @@
 npm install xwb-react-markdown -save
 ```
 
-### example
+### show-how
 
--   网页演示 [xwb-react-markdown](https://htmlpreview.github.io/?https://github.com/xwb007/xwb-react-markdown/example/index.html)
+-   网页演示 [xwb-react-markdown](https://htmlpreview.github.io/?https://github.com/xwb007/xwb-react-markdown/blob/master/example/index.html)
 
 ### git clone
 
@@ -20,19 +20,23 @@ npm install xwb-react-markdown -save
 
 ### config
 
+| attribute | value              | type   |
+| --------- | ------------------ | ------ |
+| height    | height default 500 | number |
+| uploadUrl | uploadUrl          | string |
+
 ```js
 // example
-const config = {
-    height: 500, // 默认高度
-    uploadUrl: 'http://127.0.0.1:8081/api/upload/file' // 上传图片服务器地址
-};
-
 class Example extends React.Component {
     handleEditorChange = (html, text) => {
         console.log(html);
     };
     render() {
-        return <Index config={config} handleEditorChange={this.handleEditorChange} />;
+        return <Index handleEditorChange={this.handleEditorChange} />;
     }
 }
+// attr example
+    render() {
+        return <Index config={config} handleEditorChange={this.handleEditorChange} />;
+    }
 ```
