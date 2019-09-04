@@ -36,9 +36,3 @@ class Example extends React.Component {
     }
 }
 ```
-
-### use
-
-```js
-
-```
