@@ -1,6 +1,6 @@
 {
 	"name": "xwb-react-markdown",
-	"version": "1.1.4",
+	"version": "1.1.6",
 	"description": "This is a reference encapsulated Markdown-react plug-in",
 	"main": "./lib/markdown.js",
 	"directories": {
@@ -17,9 +17,7 @@
 	"dependencies": {
 		"react": "^16.8.1",
 		"react-dom": "^16.8.1",
-		"axios": "^0.19.0"
-	},
-	"devDependencies": {
+		"axios": "^0.19.0",
 		"@babel/core": "^7.2.2",
 		"@babel/plugin-proposal-class-properties": "^7.3.0",
 		"@babel/preset-env": "^7.3.1",
