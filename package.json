@@ -1,17 +1,40 @@
 {
 	"name": "xwb-react-markdown",
-	"version": "1.0.1",
-	"description": "xwb-react-markdown",
-	"main": "src/Markdown/index.jsx",
-	"scripts": {
-		"dev": "webpack-dev-server  --host 0.0.0.0 --open http://localhost:8000",
-		"build:dev": "webpack --config webpack.config.js"
+	"version": "1.1.4",
+	"description": "This is a reference encapsulated Markdown-react plug-in",
+	"main": "./lib/markdown.js",
+	"directories": {
+		"example": "example",
+		"lib": "lib",
+		"test": "test"
 	},
 	"author": "xwb007",
 	"license": "ISC",
+	"scripts": {
+		"dev": "webpack-dev-server  --host 0.0.0.0 --open http://localhost:8080",
+		"build": "webpack --config webpack.config.lib.js && webpack --config webpack.config.js"
+	},
 	"dependencies": {
-		"axios": "^0.19.0",
+		"react": "^16.8.1",
+		"react-dom": "^16.8.1",
+		"axios": "^0.19.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.2.2",
+		"@babel/plugin-proposal-class-properties": "^7.3.0",
+		"@babel/preset-env": "^7.3.1",
+		"@babel/preset-react": "^7.0.0",
+		"autoprefixer": "^9.4.7",
+		"babel-loader": "^8.0.5",
+		"babel-polyfill": "^6.26.0",
+		"clean-webpack-plugin": "^1.0.1",
+		"copy-webpack-plugin": "^5.0.3",
+		"css-loader": "^2.1.0",
+		"file-loader": "^3.0.1",
 		"highlight.js": "^9.15.6",
+		"html-webpack-plugin": "^3.2.0",
+		"less": "^3.9.0",
+		"less-loader": "^4.1.0",
 		"markdown-it": "^8.4.2",
 		"markdown-it-abbr": "^1.0.4",
 		"markdown-it-deflist": "^2.0.3",
@@ -22,26 +45,12 @@
 		"markdown-it-sub": "^1.0.0",
 		"markdown-it-sup": "^1.0.0",
 		"markdown-it-task-lists": "^2.1.1",
-		"react": "^16.9.0",
-		"react-dom": "^16.9.0"
-	},
-	"devDependencies": {
-		"@babel/cli": "^7.5.5",
-		"@babel/core": "^7.5.5",
-		"@babel/plugin-proposal-class-properties": "^7.5.5",
-		"@babel/preset-env": "^7.5.5",
-		"@babel/preset-react": "^7.0.0",
-		"babel-loader": "^8.0.6",
-		"css-loader": "^3.2.0",
-		"file-loader": "^4.2.0",
-		"html-webpack-plugin": "^3.2.0",
-		"less": "^3.10.3",
-		"less-loader": "^5.0.0",
-		"style-loader": "^1.0.0",
-		"url-loader": "^2.1.0",
-		"webpack": "^4.39.3",
-		"webpack-cli": "^3.3.7",
-		"webpack-dev-server": "^3.8.0"
+		"postcss-loader": "^2.1.6",
+		"style-loader": "^0.23.1",
+		"url-loader": "^1.1.2",
+		"webpack": "^4.29.3",
+		"webpack-cli": "^3.2.3",
+		"webpack-dev-server": "^3.1.14"
 	},
 	"homepage": "https://github.com/xwb007/xwb-react-markdown.git",
 	"repository": {
@@ -49,6 +58,17 @@
 		"url": "git+https://github.com/xwb007/xwb-react-markdown.git"
 	},
 	"keywords": [
-		"react"
+		"react",
+		"markdown",
+		"react-markdown",
+		"xwb-react-markdown"
+	],
+	"browserslist": [
+		"defaults",
+		"not ie < 11",
+		"last 2 versions",
+		"> 1%",
+		"iOS 7",
+		"last 3 iOS versions"
 	]
 }

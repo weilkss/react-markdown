@@ -1,9 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import axios from 'axios'
 
-import * as tool from '../utils/tool'
-import Logger from '../utils/logger'
-import Decorate from '../utils/decorate'
 import NavigationBar from '../components/NavigationBar'
 import DropList from '../components/DropList'
 import HeaderList from '../components/HeaderList'
@@ -11,6 +9,20 @@ import TableList from '../components/TableList'
 import InputFile from '../components/InputFile'
 import Icon from '../components/Icon'
 import ToolBar from '../components/ToolBar'
+
+import MarkdownIt from 'markdown-it';
+import emoji from 'markdown-it-emoji'
+import subscript from 'markdown-it-sub'
+import superscript from 'markdown-it-sup'
+import footnote from 'markdown-it-footnote'
+import deflist from 'markdown-it-deflist'
+import abbreviation from 'markdown-it-abbr'
+import insert from 'markdown-it-ins'
+import mark from 'markdown-it-mark'
+import tasklists from 'markdown-it-task-lists'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-light.css'
+
 import './index.less'
 
 const _config = {
@@ -35,8 +47,177 @@ const _config = {
     }
 }
 
+const tool = {
+    deepClone(obj) {
+        if (!obj || typeof obj !== 'object') {
+            return obj
+        }
+        let objArray = Array.isArray(obj) ? [] : {}
+        if (obj && typeof obj === 'object') {
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    // 如果obj的属性是对象，递归操作
+                    if (obj[key] && typeof obj[key] === 'object') {
+                        objArray[key] = deepClone(obj[key])
+                    } else {
+                        objArray[key] = obj[key]
+                    }
+                }
+            }
+        }
+        return objArray
+    },
+    isEmpty(obj) {
+        // 判断字符是否为空的方法
+        if (typeof obj === 'undefined' || obj === null || obj === '') {
+            return true
+        }
+        return false
+    },
+    isRepeat(arr) {
+        let hash = {}
+        for (let i in arr) {
+            if (hash[arr[i]]) {
+                return true
+            }
+            hash[arr[i]] = true
+        }
+        return false
+    },
+    throttle(func, deltaX) {
+        let lastCalledAt = new Date().getTime()
+        return function () {
+            if (new Date().getTime() - lastCalledAt >= deltaX) {
+                func.apply(this, arguments)
+                lastCalledAt = new Date().getTime()
+            }
+        }
+    }
+}
 
-export class HtmlRender extends React.Component {
+
+class Decorate {
+    constructor(target) {
+        this.target = target
+    }
+    name = 'selection decoration'
+    target = ''
+    type = ''
+    option = {}
+    result = ''
+    getDecoratedText(type, option = {}) {
+        this.type = type
+        this.option = option
+        return this.result = this.calcDecorateText(this.type, option)
+    }
+    calcDecorateText(type, option = {}) {
+        switch (type) {
+            case 'h1':
+                return `\n# ${this.target} \n`
+            case 'h2':
+                return `\n## ${this.target} \n`
+            case 'h3':
+                return `\n### ${this.target} \n`
+            case 'h4':
+                return `\n#### ${this.target} \n`
+            case 'h5':
+                return `\n##### ${this.target} \n`
+            case 'h6':
+                return `\n###### ${this.target} \n`
+            case 'bold':
+                return `**${this.target}**`
+            case 'italic':
+                return `*${this.target}*`
+            case 'underline':
+                return `++${this.target}++`
+            case 'strikethrough':
+                return `~~${this.target}~~`
+            case 'unorder':
+                return `\n- ${this.target}\n`
+            case 'order':
+                return `\n1. ${this.target}\n`
+            case 'quote':
+                return `\n> ${this.target}\n`
+            case 'hr':
+                return `\n---\n`
+            case 'inlinecode':
+                return `\`${this.target}\``
+            case 'code':
+                return `\n\`\`\`\n${this.target}\n\`\`\`\n`
+            case 'table':
+                // return `\n| ${this.target} |  |\n| -- | -- |\n|  |  |\n`
+                return this.formatTableText(this.target, option)
+            case 'image':
+                return `![${this.target}](${option.imageUrl || ''})`
+            case 'link':
+                return `[${this.target}](${option.linkUrl || ''})`
+            default:
+                return `${this.target}`
+        }
+    }
+    formatTableText(target, option) {
+        const { row = 2, col = 2 } = option
+        let rowHeader = ['|']
+        let rowData = ['|']
+        let rowDivision = ['|']
+        let colStr = ''
+        let result = ''
+        for (let i = 0; i <= col; i++) {
+            rowHeader.push(` head ${i + 1} | `)
+            rowDivision.push(' --- |')
+            rowData.push(' text |')
+        }
+        for (let j = 0; j <= row; j++) {
+            colStr = colStr + '\n' + rowData.join('')
+        }
+        result = '\n' + rowHeader.join('') + '\n' + rowDivision.join('') + colStr + '\n'
+        return result
+    }
+}
+
+
+class Logger {
+
+    name = 'logger'
+
+    record = []
+
+    recycle = []
+
+    pushRecord(val) {
+        return this.record.push(val)
+    }
+
+    getRecord() {
+        return this.record
+    }
+
+    getLastRecord() {
+        const length = this.record.length
+        return this.record[length - 1]
+    }
+
+    undo(cb) {
+        const lastRecord = this.record.pop()
+        this.recycle.push(lastRecord)
+        typeof cb === 'function' && cb(this.getLastRecord())
+    }
+
+    redo(cb) {
+        if (this.recycle.length > 0) {
+            const history = this.recycle.pop()
+            this.record.push(history)
+            typeof cb === 'function' && cb(this.getLastRecord())
+        }
+    }
+
+    cleanRedoList(cb) {
+        this.recycle = []
+        typeof cb === 'function' && cb()
+    }
+}
+
+class HtmlRender extends React.Component {
     render() {
         return (
             <div dangerouslySetInnerHTML={{ __html: this.props.html }} className={`custom-html-style ${this.props.className || ""}`} />
@@ -483,7 +664,6 @@ class MdEditor extends React.Component {
             dropButton: { ...dropButton, [type]: flag }
         })
     }
-
     render() {
         const { view, dropButton, fullScreen, table } = this.state
         const renderNavigation = () => {
@@ -491,7 +671,7 @@ class MdEditor extends React.Component {
                 <NavigationBar
                     left={
                         <div className="button-wrap">
-                            <span className="button" title="header"
+                            <span className="xwb-button" title="header"
                                 onMouseEnter={() => this.showDropList('header', true)}
                                 onMouseLeave={() => this.showDropList('header', false)}
                             >
@@ -510,17 +690,17 @@ class MdEditor extends React.Component {
                                     }}
                                 />
                             </span>
-                            <span className="button" title="bold" onClick={() => this.handleDecorate('bold')}><Icon type="icon-bold" /></span>
-                            <span className="button" title="italic" onClick={() => this.handleDecorate('italic')}><Icon type="icon-italic" /></span>
-                            <span className="button" title="italic" onClick={() => this.handleDecorate('underline')}><Icon type="icon-underline" /></span>
-                            <span className="button" title="strikethrough" onClick={() => this.handleDecorate('strikethrough')}><Icon type="icon-strikethrough" /></span>
-                            <span className="button" title="unorder" onClick={() => this.handleDecorate('unorder')}><Icon type="icon-list-ul" /></span>
-                            <span className="button" title="order" onClick={() => this.handleDecorate('order')}><Icon type="icon-list-ol" /></span>
-                            <span className="button" title="quote" onClick={() => this.handleDecorate('quote')}><Icon type="icon-quote-left" /></span>
-                            <span className="button" title="hr" onClick={() => this.handleDecorate('hr')}><Icon type="icon-window-minimize" /></span>
-                            <span className="button" title="inline code" onClick={() => this.handleDecorate('inlinecode')}><Icon type="icon-embed" /></span>
-                            <span className="button" title="code" onClick={() => this.handleDecorate('code')}><Icon type="icon-embed2" /></span>
-                            <span className="button" title="table"
+                            <span className="xwb-button" title="bold" onClick={() => this.handleDecorate('bold')}><Icon type="icon-bold" /></span>
+                            <span className="xwb-button" title="italic" onClick={() => this.handleDecorate('italic')}><Icon type="icon-italic" /></span>
+                            <span className="xwb-button" title="italic" onClick={() => this.handleDecorate('underline')}><Icon type="icon-underline" /></span>
+                            <span className="xwb-button" title="strikethrough" onClick={() => this.handleDecorate('strikethrough')}><Icon type="icon-strikethrough" /></span>
+                            <span className="xwb-button" title="unorder" onClick={() => this.handleDecorate('unorder')}><Icon type="icon-list-ul" /></span>
+                            <span className="xwb-button" title="order" onClick={() => this.handleDecorate('order')}><Icon type="icon-list-ol" /></span>
+                            <span className="xwb-button" title="quote" onClick={() => this.handleDecorate('quote')}><Icon type="icon-quote-left" /></span>
+                            <span className="xwb-button" title="hr" onClick={() => this.handleDecorate('hr')}><Icon type="icon-window-minimize" /></span>
+                            <span className="xwb-button" title="inline code" onClick={() => this.handleDecorate('inlinecode')}><Icon type="icon-embed" /></span>
+                            <span className="xwb-button" title="code" onClick={() => this.handleDecorate('code')}><Icon type="icon-embed2" /></span>
+                            <span className="xwb-button" title="table"
                                 onMouseEnter={() => this.showDropList('table', true)}
                                 onMouseLeave={() => this.showDropList('table', false)}
                             >
@@ -539,7 +719,7 @@ class MdEditor extends React.Component {
                                     }}
                                 />
                             </span>
-                            <span className="button" title="image" onClick={this.handleImageUpload} style={{ position: 'relative' }}>
+                            <span className="xwb-button" title="image" onClick={this.handleImageUpload} style={{ position: 'relative' }}>
                                 <Icon type="icon-photo" />
                                 <InputFile accept={this.config.imageAccept || ""} ref={(input) => { this.inputFile = input }} onChange={(e) => {
                                     e.persist()
@@ -547,16 +727,16 @@ class MdEditor extends React.Component {
                                     this.onImageChanged(file)
                                 }} />
                             </span>
-                            <span className="button" title="link" onClick={() => this.handleDecorate('link')}><Icon type="icon-link" /></span>
+                            <span className="xwb-button" title="link" onClick={() => this.handleDecorate('link')}><Icon type="icon-link" /></span>
 
-                            <span className="button" title="empty" onClick={this.handleEmpty}><Icon type="icon-trash" /></span>
-                            <span className="button" title="undo" onClick={this.handleUndo}><Icon type="icon-reply" /></span>
-                            <span className="button" title="redo" onClick={this.handleRedo}><Icon type="icon-share" /></span>
+                            <span className="xwb-button" title="empty" onClick={this.handleEmpty}><Icon type="icon-trash" /></span>
+                            <span className="xwb-button" title="undo" onClick={this.handleUndo}><Icon type="icon-reply" /></span>
+                            <span className="xwb-button" title="redo" onClick={this.handleRedo}><Icon type="icon-share" /></span>
                         </div>
                     }
                     right={
                         <div className="button-wrap">
-                            <span className="button" title="full screen" onClick={this.handleToggleFullScreen}>
+                            <span className="xwb-button" title="full screen" onClick={this.handleToggleFullScreen}>
                                 {fullScreen ? <Icon type="icon-shrink" /> : <Icon type="icon-enlarge" />}
                             </span>
                         </div>
@@ -570,13 +750,13 @@ class MdEditor extends React.Component {
                 res.push(
                     <section className={'sec-md'} key="md">
                         <ToolBar>
-                            <span className="button" title={view.menu ? 'hidden menu' : 'show menu'} onClick={this.handleToggleMenu}>
+                            <span className="xwb-button" title={view.menu ? 'hidden menu' : 'show menu'} onClick={this.handleToggleMenu}>
                                 {view.menu ? <Icon type="icon-chevron-up" /> : <Icon type="icon-chevron-down" />}
                             </span>
-                            <span className="button" title={view.html ? 'preview' : 'column'} onClick={this.handleMdPreview}>
+                            <span className="xwb-button" title={view.html ? 'preview' : 'column'} onClick={this.handleMdPreview}>
                                 {view.html ? <Icon type="icon-desktop" /> : <Icon type="icon-columns" />}
                             </span>
-                            <span className="button" title={'toggle'} onClick={() => this.handleToggleView('md')}><Icon type="icon-refresh" /></span>
+                            <span className="xwb-button" title={'toggle'} onClick={() => this.handleToggleView('md')}><Icon type="icon-refresh" /></span>
                         </ToolBar>
                         <textarea
                             id="textarea"
@@ -595,18 +775,18 @@ class MdEditor extends React.Component {
                 res.push(
                     <section className={'sec-html'} key="html">
                         <ToolBar style={{ right: '20px' }}>
-                            <span className="button" title={view.menu ? 'hidden menu' : 'show menu'} onClick={this.handleToggleMenu}>
+                            <span className="xwb-button" title={view.menu ? 'hidden menu' : 'show menu'} onClick={this.handleToggleMenu}>
                                 {view.menu ? <Icon type="icon-chevron-up" />
                                     : <Icon type="icon-chevron-down" />
                                 }
                             </span>
-                            <span className="button" title={view.md ? 'preview' : 'column'} onClick={this.handleHtmlPreview}>
+                            <span className="xwb-button" title={view.md ? 'preview' : 'column'} onClick={this.handleHtmlPreview}>
                                 {view.md ? <Icon type="icon-desktop" />
                                     : <Icon type="icon-columns" />
                                 }
                             </span>
-                            <span className="button" title={'toggle'} onClick={() => this.handleToggleView('html')}><Icon type="icon-refresh" /></span>
-                            <span className="button" title="HTML code" onClick={this.handleToggleHtmlType}>
+                            <span className="xwb-button" title={'toggle'} onClick={() => this.handleToggleView('html')}><Icon type="icon-refresh" /></span>
+                            <span className="xwb-button" title="HTML code" onClick={this.handleToggleHtmlType}>
                                 {htmlType === 'render' ? <Icon type="icon-embed" />
                                     : <Icon type="icon-eye" />
                                 }
@@ -644,4 +824,84 @@ class MdEditor extends React.Component {
     }
 }
 MdEditor.HtmlRender = HtmlRender
-export default MdEditor
+
+class ReactMarkdown extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            uploadImg: ""
+        }
+        this.mdParser = new MarkdownIt({
+            html: true,
+            linkify: true,
+            typographer: true,
+            highlight: function (str, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(lang, str).value
+                    } catch (__) { }
+                }
+                return ''
+            }
+        })
+            .use(emoji)
+            .use(subscript)
+            .use(superscript)
+            .use(footnote)
+            .use(deflist)
+            .use(abbreviation)
+            .use(insert)
+            .use(mark)
+            .use(tasklists, { enabled: this.taskLists })
+    }
+    handleEditorChange = ({ html, text }) => this.props.handleEditorChange && this.props.handleEditorChange(html, text)
+    handleImageUpload = (file, callback) => {
+        if (!this.props.config.uploadUrl) {
+            console.error('请配置上传图片服务器地址!')
+            return;
+        }
+        const formData = new FormData()
+        formData.append('file', file)
+        axios.post(this.props.config.uploadUrl, formData, { 'Content-Type': 'multipart/form-data' }).then(res => {
+            callback(res.data.data)
+            this.setState({
+                uploadImg: res.data.data
+            })
+        })
+    }
+    render() {
+        return <div className="demo-wrap">
+            <div className="editor-wrap" style={{ marginTop: '30px' }}>
+                <MdEditor
+                    ref={node => this.mdEditor = node}
+                    value=''
+                    style={{ height: (this.props.config.height) + 'px', width: '100%' }}
+                    renderHTML={text => this.mdParser.render(text)}
+                    onChange={this.handleEditorChange}
+                    onImageUpload={this.handleImageUpload}
+                    config={{
+                        view: {
+                            menu: true,
+                            md: true,
+                            html: true
+                        },
+                        table: {
+                            maxRow: 5,
+                            maxCol: 6
+                        },
+                        imageUrl: this.state.uploadImg,
+                    }}
+                />
+            </div>
+        </div>
+    }
+}
+
+ReactMarkdown.defaultProps = {
+    config: {
+        height: 500,
+        uploadUrl: ''
+    }
+}
+
+export default ReactMarkdown

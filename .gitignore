@@ -1,11 +1,20 @@
+# Logs
 logs
 *.log
-pids
-*.pid
-*.seed
-coverage
-node_modules
-dist
-bower_components
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# dist 
+dist/
+dist/*
+
+# karma
+coverage/
+coverage/*
+
+# Xcode
 .DS_Store
-package-lock.json

@@ -1,7 +1,5 @@
-// DropList
 import React from 'react'
 import './index.less'
-
 class DropList extends React.Component {
 	constructor(props) {
 		super(props);
