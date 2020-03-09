@@ -51,6 +51,7 @@ class Example extends React.Component {
 
 ```js
 // attr example
+// 当上传地址为空时，默认则时把图片转成base64
 const config = {
     height:600,
     uploadUrl:'http://0.0.0.0/upload' // 你自己的服务器地址
