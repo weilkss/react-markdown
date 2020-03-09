@@ -249,6 +249,8 @@ class MdEditor extends React.Component {
 
     nodeMdPreviewWraper = null
 
+    uinput = null
+
     inputFile = null
 
     scale = 0
@@ -563,6 +565,15 @@ class MdEditor extends React.Component {
 
     onImageChanged(file) {
         const { onImageUpload } = this.props
+
+        if (!this.props.config.uploadUrl) {
+            let imgFile = new FileReader();
+            imgFile.readAsDataURL(file);
+            imgFile.onload =  (e) =>{
+                this.handleDecorate('image', { target: file.name, imageUrl:e.currentTarget.result })
+            }
+        }
+
         onImageUpload(file, (imageUrl) => {
             this.handleDecorate('image', { target: file.name, imageUrl })
         })
@@ -725,6 +736,7 @@ class MdEditor extends React.Component {
                                     e.persist()
                                     const file = e.target.files[0]
                                     this.onImageChanged(file)
+                                    this.uinput = e.target
                                 }} />
                             </span>
                             <span className="xwb-button" title="link" onClick={() => this.handleDecorate('link')}><Icon type="icon-link" /></span>
@@ -857,7 +869,6 @@ class ReactMarkdown extends React.Component {
     handleEditorChange = ({ html, text }) => this.props.handleEditorChange && this.props.handleEditorChange(html, text)
     handleImageUpload = (file, callback) => {
         if (!this.props.config.uploadUrl) {
-            console.error('请配置上传图片服务器地址!')
             return;
         }
         const formData = new FormData()
@@ -871,7 +882,7 @@ class ReactMarkdown extends React.Component {
     }
     render() {
         return <div className="demo-wrap">
-            <div className="editor-wrap" style={{ marginTop: '30px' }}>
+            <div className="editor-wrap">
                 <MdEditor
                     ref={node => this.mdEditor = node}
                     value=''

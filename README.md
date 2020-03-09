@@ -13,7 +13,7 @@
 ### Install
 
 ```shell
-npm install xwb-react-markdown -save
+npm install xwb-react-markdown --save
 ```
 
 ### show-how
@@ -24,7 +24,7 @@ npm install xwb-react-markdown -save
 
 ```shell
 > git clone https://github.com/xwb007/xwb-react-markdown.git
-> npm i
+> npm install
 > npm run dev
 ```
 
@@ -53,7 +53,7 @@ class Example extends React.Component {
 // attr example
 const config = {
     height:600,
-    uploadUrl:'http://0.0.0.0/upload'
+    uploadUrl:'http://0.0.0.0/upload' // 你自己的服务器地址
 }
 render() {
     return <Index config={config} handleEditorChange={this.handleEditorChange} />;
