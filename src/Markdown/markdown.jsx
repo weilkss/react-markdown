@@ -326,7 +326,10 @@ class MdEditor extends React.Component {
     }
 
     componentDidMount() {
-        this.renderHTML(this.props.value || "")
+        if(this.props.config.value){
+            this._setMdText(this.props.config.value )
+        }
+        this.renderHTML(this.props.config.value || "")
             .then(html => {
                 this.setState({
                     html: html
@@ -931,7 +934,8 @@ ReactMarkdown.defaultProps = {
         height: 300,
         uploadUrl: '',
         token: '',
-        domian: ''
+        domian: '',
+        value: ''
     }
 }
 

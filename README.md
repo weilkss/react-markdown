@@ -33,10 +33,11 @@ npm install xwb-react-markdown --save
 
 | attribute | value              | type   |
 | --------- | ------------------ | ------ |
-| height    | height default 500 | number |
-| domian    | 七牛云的资源域名   | string |
-| token     | 七牛云 token       | string |
-| uploadUrl | uploadUrl          | string |
+| value    | 默认值 default null | string |
+| height    | height default 300 | number |
+| domian    | 七牛云的资源域名 default null  | string |
+| token     | 七牛云 token default null      | string |
+| uploadUrl | uploadUrl default null       | string |
 
 ### example
 
@@ -58,6 +59,7 @@ class Example extends React.Component {
 // 如果使用七牛云上传 则需要自己去获取token 且token和domian不能为空
 // domian为你七牛云的资源域名
 const config = {
+    value:'',
     height: 300,
     domian: "",
     token: "",

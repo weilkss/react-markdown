@@ -1,6 +1,6 @@
 {
   "name": "xwb-react-markdown",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "description": "This is a reference encapsulated Markdown-react plug-in",
   "main": "./lib/markdown.js",
   "directories": {
