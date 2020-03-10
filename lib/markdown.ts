@@ -4,7 +4,9 @@ declare namespace ReactMarkdownEditorLite {
 	export interface MdEditorProps {
 		config?: {
 			height?: number;
-			uploadUrl: string
+			uploadUrl: string;
+			domian: string;
+			token: string;
 		}
 		handleEditorChange?: (data: {
 			text: string;

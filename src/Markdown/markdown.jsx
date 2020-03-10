@@ -871,12 +871,29 @@ class ReactMarkdown extends React.Component {
         if (!this.props.config.uploadUrl) {
             return;
         }
-        const formData = new FormData()
+        let formData = new FormData()
+
+        if(this.props.config.token){
+            let fileType = "";
+            if (file.type === "image/png") {
+              fileType = "png";
+            } else {
+              fileType = "jpg";
+            }
+            formData.append('token', this.props.config.token);
+            formData.append("key", file.name);
+        }
         formData.append('file', file)
         axios.post(this.props.config.uploadUrl, formData, { 'Content-Type': 'multipart/form-data' }).then(res => {
-            callback(res.data.data)
+            let imgUrl = '';
+            if(this.props.config.domian){
+                imgUrl = this.props.config.domian + res.data.key
+            }else{
+                imgUrl = res.data.url
+            }
+            callback(imgUrl)
             this.setState({
-                uploadImg: res.data.data
+                uploadImg: imgUrl
             })
         })
     }
@@ -891,6 +908,7 @@ class ReactMarkdown extends React.Component {
                     onChange={this.handleEditorChange}
                     onImageUpload={this.handleImageUpload}
                     config={{
+                        ...this.props.config,
                         view: {
                             menu: true,
                             md: true,
@@ -910,8 +928,10 @@ class ReactMarkdown extends React.Component {
 
 ReactMarkdown.defaultProps = {
     config: {
-        height: 500,
-        uploadUrl: ''
+        height: 300,
+        uploadUrl: '',
+        token: '',
+        domian: ''
     }
 }
 

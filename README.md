@@ -8,6 +8,7 @@
 - 界面可配置, 如只显示编辑区或预览区
 - 支持常用的 markdown 编辑功能，如加粗，斜体等等...
 - 支持图片上传(自定义服务器地址，基于 axios)
+- 支持七牛云图片上传，文件直传，暂时不支持断点续传
 - 支持编辑区和预览区同步滚动
 
 ### Install
@@ -33,6 +34,8 @@ npm install xwb-react-markdown --save
 | attribute | value              | type   |
 | --------- | ------------------ | ------ |
 | height    | height default 500 | number |
+| domian    | 七牛云的资源域名   | string |
+| token     | 七牛云 token       | string |
 | uploadUrl | uploadUrl          | string |
 
 ### example
@@ -44,7 +47,7 @@ class Example extends React.Component {
     console.log(html);
   };
   render() {
-    return <Index handleEditorChange={this.handleEditorChange} />;
+    return <ReactMarkdown handleEditorChange={this.handleEditorChange} />;
   }
 }
 ```
@@ -52,11 +55,15 @@ class Example extends React.Component {
 ```js
 // attr example
 // 当上传地址为空时，默认则时把图片转成base64
+// 如果使用七牛云上传 则需要自己去获取token 且token和domian不能为空
+// domian为你七牛云的资源域名
 const config = {
-    height:600,
-    uploadUrl:'http://0.0.0.0/upload' // 你自己的服务器地址
+    height: 300,
+    domian: "",
+    token: "",
+    uploadUrl: 'http://0.0.0.0/upload' // 你自己的服务器地址
 }
 render() {
-    return <Index config={config} handleEditorChange={this.handleEditorChange} />;
+    return <ReactMarkdown config={config} handleEditorChange={this.handleEditorChange} />;
 }
 ```
